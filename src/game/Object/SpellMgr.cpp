@@ -175,6 +175,11 @@ uint32 GetSpellCastTime(SpellEntry const* spellInfo, Spell const* spell)
         castTime += 500;
     }
 
+    if (spell && spell->GetCaster()->IsPlayerOrPlayerPet())
+    {
+        castTime = int32(castTime / sWorld.getConfig(CONFIG_FLOAT_ATTACK_SPEED_MULTIPLIER));
+    }
+
     return (castTime > 0) ? uint32(castTime) : 0;
 }
 
@@ -4666,14 +4671,17 @@ SpellCastResult SpellMgr::GetSpellAllowedInLocationError(SpellEntry const* spell
         }
     }
 
-    // continent limitation (virtual continent), ignore for GM
-    if (spellInfo->HasAttribute(SPELL_ATTR_EX4_CAST_ONLY_IN_OUTLAND) && !(player && player->isGameMaster()))
+    if(!sWorld.getConfig(CONFIG_BOOL_ALLOW_FLYING_MOUNTS_EVERYWHERE))
     {
-        uint32 v_map = GetVirtualMapForMapAndZone(map_id, zone_id);
-        MapEntry const* mapEntry = sMapStore.LookupEntry(v_map);
-        if (!mapEntry || mapEntry->addon < 1 || !mapEntry->IsContinent())
+        // continent limitation (virtual continent), ignore for GM
+        if (spellInfo->HasAttribute(SPELL_ATTR_EX4_CAST_ONLY_IN_OUTLAND) && !(player && player->isGameMaster()))
         {
-            return SPELL_FAILED_INCORRECT_AREA;
+            uint32 v_map = GetVirtualMapForMapAndZone(map_id, zone_id);
+            MapEntry const* mapEntry = sMapStore.LookupEntry(v_map);
+            if (!mapEntry || mapEntry->addon < 1 || !mapEntry->IsContinent())
+            {
+                return SPELL_FAILED_INCORRECT_AREA;
+            }
         }
     }
 

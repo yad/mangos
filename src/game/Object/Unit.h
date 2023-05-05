@@ -1810,7 +1810,7 @@ uint32  GetPower(Powers power) const { return GetUInt32Value(UNIT_FIELD_POWER1 +
          * \see Unit::m_modAttackSpeedPct
          * \see EUnitFields
          */
-        void SetAttackTime(WeaponAttackType att, uint32 val) { SetFloatValue(UNIT_FIELD_BASEATTACKTIME + att, val * m_modAttackSpeedPct[att]); }
+        void SetAttackTime(WeaponAttackType att, uint32 val);
         /**
          * Applies a percentage change to a given attack type
          * @param att attack type to mod
@@ -3265,6 +3265,8 @@ uint32  GetPower(Powers power) const { return GetUInt32Value(UNIT_FIELD_POWER1 +
         Player* GetCharmerOrOwnerPlayerOrPlayerItself();
         Player const* GetCharmerOrOwnerPlayerOrPlayerItself() const;
 
+        bool IsPlayerOrPlayerPet() const;
+
         /**
          * Set's the current \ref Pet for this \ref Unit
          * @param pet The \ref Pet to add to this \ref Unit
@@ -3854,7 +3856,7 @@ uint32  GetPower(Powers power) const { return GetUInt32Value(UNIT_FIELD_POWER1 +
 
             m_lastManaUseTimer = 5000;
         }
-        bool IsUnderLastManaUseEffect() const { return m_lastManaUseTimer; }
+        bool IsUnderLastManaUseEffect() const;
 
         uint32 GetRegenTimer() const { return m_regenTimer; }
 

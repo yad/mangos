@@ -14,7 +14,7 @@ RUN mkdir /mangoserver/build
 WORKDIR /mangoserver/build
 
 #Install mangos
-RUN cmake .. -DCMAKE_INSTALL_PREFIX=/mangos -DBUILD_MANGOSD=0 -DBUILD_REALMD=1 -DBUILD_TOOLS=0
+RUN --mount=type=cache,target=/mangoserver/build cmake .. -DCMAKE_INSTALL_PREFIX=/mangos -DBUILD_MANGOSD=0 -DBUILD_REALMD=1 -DBUILD_TOOLS=0
 RUN --mount=type=cache,target=/mangoserver/build make -j4
 RUN --mount=type=cache,target=/mangoserver/build make install
 

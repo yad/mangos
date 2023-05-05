@@ -29,6 +29,7 @@
 #include "ObjectMgr.h"
 #include "SpellMgr.h"
 #include "Log.h"
+#include "World.h"
 #include "Opcodes.h"
 #include "Spell.h"
 #include "ScriptMgr.h"
@@ -382,6 +383,13 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         recvPacket.rpos(recvPacket.wpos());                 // prevent spam at ignore packet
         return;
     }
+
+    if (sWorld.getConfig(CONFIG_BOOL_NO_COOLDOWN))
+    {
+        _player->RemoveSpellCooldown(spellId, true);
+    }
+
+    _player->SetLatestSpell(spellId);
 
     Aura* triggeredByAura = mover->GetTriggeredByClientAura(spellId);
 

@@ -508,6 +508,13 @@ void World::LoadConfigSettings(bool reload)
     setConfigPos(CONFIG_FLOAT_RATE_TALENT, "Rate.Talent", 1.0f);
     setConfigPos(CONFIG_FLOAT_RATE_CORPSE_DECAY_LOOTED, "Rate.Corpse.Decay.Looted", 0.0f);
 
+    setConfigPos(CONFIG_FLOAT_RUN_SPEED_MULTIPLIER,    "Custom.RunSpeedMultiplier",    1.0f);
+    setConfigPos(CONFIG_FLOAT_SWIM_SPEED_MULTIPLIER,   "Custom.SwimSpeedMultiplier",   1.0f);
+    setConfigPos(CONFIG_FLOAT_FLIGHT_SPEED_MULTIPLIER, "Custom.FlightSpeedMultiplier", 1.0f);
+
+    setConfigPos(CONFIG_FLOAT_ARMOR_MULTIPLIER,        "Custom.ArmorMultiplier", 1.0f);
+    setConfigPos(CONFIG_FLOAT_ATTACK_SPEED_MULTIPLIER, "Custom.AttackSpeedMultiplier", 1.0f);
+
     setConfigMinMax(CONFIG_FLOAT_RATE_TARGET_POS_RECALCULATION_RANGE, "TargetPosRecalculateRange", 1.5f, CONTACT_DISTANCE, ATTACK_DISTANCE);
 
     setConfigPos(CONFIG_FLOAT_RATE_DURABILITY_LOSS_DAMAGE, "DurabilityLossChance.Damage", 0.5f);
@@ -857,6 +864,14 @@ void World::LoadConfigSettings(bool reload)
     setConfig(CONFIG_UINT32_LOG_WHISPERS,             "LogWhispers", 1);
 
     setConfig(CONFIG_BOOL_PET_UNSUMMON_AT_MOUNT,      "PetUnsummonAtMount", true);
+
+    setConfig(CONFIG_FLOAT_SPEED_GAME,                    "Custom.SpeedGame",                   1.0f);
+    setConfig(CONFIG_BOOL_NO_COOLDOWN,                    "Custom.NoCooldown",                  false);
+    setConfig(CONFIG_BOOL_NO_CHECK_IN_FRONT,              "Custom.NoCheckInFront",              false);
+    setConfig(CONFIG_BOOL_NO_COST,                        "Custom.NoCost",                      false);
+    setConfig(CONFIG_BOOL_NO_WAIT_AFTER_CAST,             "Custom.NoWaitAfterCast",             false);
+    setConfig(CONFIG_BOOL_ALLOW_FLYING_MOUNTS_EVERYWHERE, "Custom.AllowFlyingMountsEverywhere", false);
+    setConfig(CONFIG_BOOL_UNLIMITED_AMMO,                 "Custom.UnLimitedAmmo",               false);
 
     // WARDEN
 

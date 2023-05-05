@@ -2628,6 +2628,9 @@ class Player : public Unit
         void SetTitle(CharTitlesEntry const* title, bool lost = false);
 
         bool canSeeSpellClickOn(Creature const* creature) const;
+
+        uint32 GetLatestSpell() { return m_latest_spell; }
+        void SetLatestSpell(uint32 s) { m_latest_spell = s; }
     protected:
 
         uint32 m_contestedPvPTimer;
@@ -2950,6 +2953,8 @@ class Player : public Unit
         uint32 m_timeSyncServer;
 
         uint32 m_cachedGS;
+
+        uint32 m_latest_spell = 0;
 };
 
 void AddItemsSetItem(Player* player, Item* item);

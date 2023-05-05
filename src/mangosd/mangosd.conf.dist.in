@@ -385,7 +385,7 @@ CleanCharacterDB                  = 1
 
 LogSQL                       = 1
 PidFile                      = ""
-LogLevel                     = 3
+LogLevel                     = 0
 LogTime                      = 0
 LogFile                      = "world-server.log"
 LogTimestamp                 = 0
@@ -1333,6 +1333,15 @@ GM.MaxSpeedFactor        = 10
 #        Talent Point rates
 #        Default: 1
 #
+#      Rate.CharRunSpeed
+#          Multiply the Default Player Speed (1 - Default, 1.4 - 40% faster, 0.5 - Half Movement Speed)
+#
+#      Rate.CharSwimSpeed
+#          Multiply the Default Player Speed (1 - Default, 1.4 - 40% faster, 0.5 - Half Movement Speed)
+#
+#      Rate.CharFlightSpeed
+#          Multiply the Default Player Speed (1 - Default, 1.4 - 40% faster, 0.5 - Half Movement Speed)
+#
 #    Rate.Reputation.Gain
 #         Reputation Gain rate
 #         Default: 1
@@ -1458,6 +1467,9 @@ Rate.Honor                        = 1
 Rate.Mining.Amount                = 1
 Rate.Mining.Next                  = 1
 Rate.Talent                       = 1
+Rate.CharRunSpeed                 = 1
+Rate.CharSwimSpeed                = 1
+Rate.CharFlightSpeed              = 1
 Rate.Reputation.Gain              = 1
 Rate.Reputation.LowLevel.Kill     = 1
 Rate.Reputation.LowLevel.Quest    = 1
@@ -1843,3 +1855,52 @@ Warden.DBLogLevel            = 0
 Eluna.Enabled    = 1
 Eluna.TraceBack  = false
 Eluna.ScriptPath = "lua_scripts"
+
+###################################################################################################################
+#
+#     Custom.SpeedGame
+#         Set it to a number upper than 1 to speed up realm timer
+#     Default : 1 (Real Time)
+#     Example : 60 to force 1scde (real time) = 1 minute (realm timer)
+#
+#     Custom.NoCooldown
+#         Set it to 1 to disable cooldown
+#     Default : 0 (Cooldown Enable)
+#
+#     Custom.NoCheckInFront
+#         Set it to 1 to disable cast in front spell
+#     Default : 0 (Cast in front Enable)
+#
+#     Custom.NoCost
+#         Set it to 1 to disable spell cost
+#     Default : 0 (Cast cost)
+#
+#     Custom.NoWaitAfterCast
+#         Set it to 1 to disable 5 scdes before regenerate mana again
+#     Default : 0 (5 scdes)
+#
+#     Custom.AllowFlyingMountsEverywhere
+#         Set it to 1 to enable flying mounts everywhere
+#         If you do it, mounts are now used as item...
+#     Default : 0
+#
+#     Custom.UnLimitedAmmo
+#         Set it to 1 to have unlimited ammo
+#     Default : 0
+#
+#     Custom.UnLimitedIndispensableItems
+#         Set it to 1 to have unlimited indispensable items
+#     Default : 0
+#
+###################################################################################################################
+
+Custom.SpeedGame = 1
+Custom.NoCooldown = 0
+Custom.NoCheckInFront = 0
+Custom.NoCost = 0
+Custom.NoWaitAfterCast = 0
+Custom.AllowFlyingMountsEverywhere = 0
+Custom.UnLimitedAmmo = 0
+Custom.UnLimitedIndispensableItems = 0
+Custom.AttackSpeedMultiplier = 2
+Custom.DefenseMultiplier = 2

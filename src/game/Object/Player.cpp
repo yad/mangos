@@ -1530,6 +1530,12 @@ void Player::Update(uint32 update_diff, uint32 p_time)
         {
             RegenerateAll();
         }
+
+        if (GetLatestSpell() != 0 && sWorld.getConfig(CONFIG_BOOL_NO_COOLDOWN))
+        {
+           RemoveSpellCooldown(GetLatestSpell(), true);
+           SetLatestSpell(0);
+        }
     }
 
     if(!IsAlive() && !HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST) && GetDeathState() != GHOULED)
@@ -22844,6 +22850,11 @@ void Player::AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 it
 
 void Player::AddSpellCooldown(uint32 spellid, uint32 itemid, time_t end_time)
 {
+    if (sWorld.getConfig(CONFIG_BOOL_NO_COOLDOWN))
+    {
+        return;
+    }
+
     SpellCooldown sc;
     sc.end = end_time;
     sc.itemid = itemid;
@@ -23571,9 +23582,12 @@ void Player::SendInitialPacketsBeforeAddToMap()
 
     m_achievementMgr.SendAllAchievementData();
 
+    float speedrate = sWorld.getConfig(CONFIG_FLOAT_SPEED_GAME);
+    uint32 speedtime = secsToTimeBitFields( (sWorld.GetGameTime() - sWorld.GetUptime()) + (sWorld.GetUptime() * speedrate) );
+
     data.Initialize(SMSG_LOGIN_SETTIMESPEED, 4 + 4 + 4);
-    data << uint32(secsToTimeBitFields(sWorld.GetGameTime()));
-    data << (float)0.01666667f;                             // game speed
+    data << uint32(speedtime);
+    data << (float)0.01666667f * speedrate;                 // game speed
     data << uint32(0);                                      // added in 3.1.2
     GetSession()->SendPacket(&data);
 
@@ -25528,6 +25542,12 @@ bool Player::CanStartFlyInArea(uint32 mapid, uint32 zone, uint32 area) const
     {
         return true;
     }
+
+    if(sWorld.getConfig(CONFIG_BOOL_ALLOW_FLYING_MOUNTS_EVERYWHERE))
+    {
+        return true;
+    }
+
     // continent checked in SpellMgr::GetSpellAllowedInLocationError at cast and area update
     uint32 v_map = GetVirtualMapForMapAndZone(mapid, zone);
 

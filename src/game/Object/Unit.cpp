@@ -2925,7 +2925,14 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, SpellSchoolMask schoolM
         }
     }
 
-    *absorb = damage - RemainingDamage - *resist;
+    if (IsPlayerOrPlayerPet())
+    {
+        *absorb = damage - (RemainingDamage / sWorld.getConfig(CONFIG_FLOAT_ARMOR_MULTIPLIER)) - *resist;
+    }
+    else
+    {
+        *absorb = damage - RemainingDamage - *resist;
+    }
 }
 
 void Unit::CalculateAbsorbResistBlock(Unit* pCaster, SpellNonMeleeDamage* damageInfo, SpellEntry const* spellProto, WeaponAttackType attType)
@@ -7309,6 +7316,22 @@ void Unit::Uncharm()
     }
 }
 
+bool Unit::IsPlayerOrPlayerPet() const
+{
+    if (GetTypeId() == TYPEID_PLAYER)
+    {
+        return true;
+    }
+
+    if (GetTypeId() == TYPEID_UNIT && ((Creature*)this)->IsPet())
+    {
+        Unit* owner = this->GetOwner();
+        return (owner && owner->GetTypeId() == TYPEID_PLAYER && ((Pet*)this)->IsPermanentPetFor((Player*)owner));
+    }
+
+    return false;
+}
+
 void Unit::SetPet(Pet* pet)
 {
     SetPetGuid(pet ? pet->GetObjectGuid() : ObjectGuid());
@@ -10190,7 +10213,31 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced, float ratio)
 
 float Unit::GetSpeed(UnitMoveType mtype) const
 {
-    return m_speed_rate[mtype] * baseMoveSpeed[mtype];
+    float speed = m_speed_rate[mtype] * baseMoveSpeed[mtype];
+
+    if (IsPlayerOrPlayerPet())
+    {
+        switch (mtype)
+        {
+            case MOVE_RUN:
+                speed *= sWorld.getConfig(CONFIG_FLOAT_FLIGHT_SPEED_MULTIPLIER);
+                break;
+            case MOVE_SWIM:
+                speed *= sWorld.getConfig(CONFIG_FLOAT_SWIM_SPEED_MULTIPLIER);
+                break;
+            case MOVE_FLIGHT:
+                if (GetTypeId() == TYPEID_PLAYER)
+                {
+                    // player only here
+                    speed *= sWorld.getConfig(CONFIG_FLOAT_FLIGHT_SPEED_MULTIPLIER);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    return speed;
 }
 
 struct SetSpeedRateHelper
@@ -12594,6 +12641,19 @@ bool Unit::hasNegativeAuraWithInterruptFlag(uint32 flag)
     return false;
 }
 
+void Unit::SetAttackTime(WeaponAttackType att, uint32 val)
+{
+    if (IsPlayerOrPlayerPet())
+    {
+        uint32 attackTimer = uint32(val / sWorld.getConfig(CONFIG_FLOAT_ATTACK_SPEED_MULTIPLIER));
+        SetFloatValue(UNIT_FIELD_BASEATTACKTIME + att, attackTimer * m_modAttackSpeedPct[att]);
+    }
+    else
+    {
+        SetFloatValue(UNIT_FIELD_BASEATTACKTIME + att, val * m_modAttackSpeedPct[att]);
+    }
+}
+
 void Unit::ApplyAttackTimePercentMod(WeaponAttackType att, float val, bool apply)
 {
     if (val > 0)
@@ -12685,6 +12745,18 @@ Aura* Unit::GetDummyAura(uint32 spell_id) const
         }
 
     return NULL;
+}
+
+bool Unit::IsUnderLastManaUseEffect() const
+{
+    if ((sWorld.getConfig(CONFIG_BOOL_NO_WAIT_AFTER_CAST)) && IsPlayerOrPlayerPet())
+    {
+        return false;
+    }
+    else
+    {
+        return m_lastManaUseTimer;
+    }
 }
 
 void Unit::SetContestedPvP(Player* attackedPlayer)
