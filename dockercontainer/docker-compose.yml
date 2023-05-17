@@ -1,7 +1,7 @@
 #To start the server from this docker-compose file you can run the command "docker-compose up"
 #Configure the location of the configuration file and the data folder
 #The connection to mysql should match the name of the service in this case "mysqldb"
-version: "2.4"
+version: "3.9"
 services:
   mangosd:
     build:

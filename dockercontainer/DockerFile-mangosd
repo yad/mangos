@@ -14,9 +14,9 @@ RUN mkdir /mangoserver/build
 WORKDIR /mangoserver/build
 
 #Install mangos
-RUN --mount=type=cache,target=/mangoserver/build cmake .. -DCMAKE_INSTALL_PREFIX=/mangos -DBUILD_MANGOSD=1 -DBUILD_REALMD=0 -DBUILD_TOOLS=0
-RUN --mount=type=cache,target=/mangoserver/build make -j4
-RUN --mount=type=cache,target=/mangoserver/build make install
+RUN cmake .. -DCMAKE_INSTALL_PREFIX=/mangos -DBUILD_MANGOSD=1 -DBUILD_REALMD=0 -DBUILD_TOOLS=0
+RUN make -j4
+RUN make install
 
 #Runtime image
 FROM ubuntu:18.04 as runtime
