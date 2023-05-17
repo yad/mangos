@@ -512,8 +512,9 @@ void World::LoadConfigSettings(bool reload)
     setConfigPos(CONFIG_FLOAT_SWIM_SPEED_MULTIPLIER,   "Custom.SwimSpeedMultiplier",   1.0f);
     setConfigPos(CONFIG_FLOAT_FLIGHT_SPEED_MULTIPLIER, "Custom.FlightSpeedMultiplier", 1.0f);
 
-    setConfigPos(CONFIG_FLOAT_ARMOR_MULTIPLIER,        "Custom.ArmorMultiplier", 1.0f);
-    setConfigPos(CONFIG_FLOAT_ATTACK_SPEED_MULTIPLIER, "Custom.AttackSpeedMultiplier", 1.0f);
+    setConfigPos(CONFIG_FLOAT_ARMOR_MULTIPLIER,                "Custom.ArmorMultiplier", 1.0f);
+    setConfigPos(CONFIG_FLOAT_ATTACK_SPEED_MULTIPLIER,         "Custom.AttackSpeedMultiplier", 1.0f);
+    setConfigPos(CONFIG_FLOAT_CATCH_UP_BONUS_XP_PER_CHARACTER, "Custom.CatchUpBonusXpPerCharacter", 0.0f);
 
     setConfigMinMax(CONFIG_FLOAT_RATE_TARGET_POS_RECALCULATION_RANGE, "TargetPosRecalculateRange", 1.5f, CONTACT_DISTANCE, ATTACK_DISTANCE);
 

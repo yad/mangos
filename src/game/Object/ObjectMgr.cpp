@@ -2022,6 +2022,19 @@ uint32 ObjectMgr::GetPlayerAccountIdByPlayerName(const std::string& name) const
     return 0;
 }
 
+uint32 ObjectMgr::CountPlayerCharactersWithBetterLevel(uint32 pl_accountId, uint32 char_level) const
+{
+    QueryResult* result = CharacterDatabase.PQuery("SELECT count(1) FROM `characters` WHERE `account` = '%u' AND `level` > '%u'", pl_accountId, char_level);
+    if (result)
+    {
+        uint32 count = (*result)[0].GetUInt32();
+        delete result;
+        return count;
+    }
+
+    return 0;
+}
+
 void ObjectMgr::LoadItemLocales()
 {
     mItemLocaleMap.clear();                                 // need for reload case

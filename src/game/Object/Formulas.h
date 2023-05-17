@@ -189,7 +189,13 @@ namespace MaNGOS
                 xp_gain *= 2;
             }
 
-            return (uint32)(xp_gain * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_KILL));
+            float catchUpXpBonus = 1.0f + (
+                sObjectMgr.CountPlayerCharactersWithBetterLevel(pl->GetSession()->GetAccountId(), pl->getLevel()) *
+                sWorld.getConfig(CONFIG_FLOAT_CATCH_UP_BONUS_XP_PER_CHARACTER)
+            );
+            DEBUG_LOG("PLAYER: Catch up XP bonus = %f", catchUpXpBonus);
+
+            return (uint32)(xp_gain * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_KILL) * catchUpXpBonus);
         }
 
         inline float xp_in_group_rate(uint32 count, bool isRaid)

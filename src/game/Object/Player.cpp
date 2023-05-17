@@ -7423,11 +7423,17 @@ void Player::CheckAreaExploreAndOutdoor()
             }
             else
             {
+                float catchUpXpBonus = 1.0f + (
+                    sObjectMgr.CountPlayerCharactersWithBetterLevel(GetSession()->GetAccountId(), getLevel()) *
+                    sWorld.getConfig(CONFIG_FLOAT_CATCH_UP_BONUS_XP_PER_CHARACTER)
+                );
+                DEBUG_LOG("PLAYER: Catch up XP bonus = %f", catchUpXpBonus);
+
                 int32 diff = int32(getLevel()) - p->area_level;
                 uint32 XP = 0;
                 if (diff < -5)
                 {
-                    XP = uint32(sObjectMgr.GetBaseXP(getLevel() + 5) * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_EXPLORE));
+                    XP = uint32(sObjectMgr.GetBaseXP(getLevel() + 5) * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_EXPLORE) * catchUpXpBonus);
                 }
                 else if (diff > 5)
                 {
@@ -7441,11 +7447,11 @@ void Player::CheckAreaExploreAndOutdoor()
                         exploration_percent = 0;
                     }
 
-                    XP = uint32(sObjectMgr.GetBaseXP(p->area_level) * exploration_percent / 100 * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_EXPLORE));
+                    XP = uint32(sObjectMgr.GetBaseXP(p->area_level) * exploration_percent / 100 * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_EXPLORE) * catchUpXpBonus);
                 }
                 else
                 {
-                    XP = uint32(sObjectMgr.GetBaseXP(p->area_level) * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_EXPLORE));
+                    XP = uint32(sObjectMgr.GetBaseXP(p->area_level) * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_EXPLORE) * catchUpXpBonus);
                 }
 
                 GiveXP(XP, NULL);
@@ -16511,8 +16517,14 @@ void Player::RewardQuest(Quest const* pQuest, uint32 reward, Object* questGiver,
 
     QuestStatusData& q_status = mQuestStatus[quest_id];
 
+    float catchUpXpBonus = 1.0f + (
+        sObjectMgr.CountPlayerCharactersWithBetterLevel(GetSession()->GetAccountId(), getLevel()) *
+        sWorld.getConfig(CONFIG_FLOAT_CATCH_UP_BONUS_XP_PER_CHARACTER)
+    );
+    DEBUG_LOG("PLAYER: Catch up XP bonus = %f", catchUpXpBonus);
+
     // Used for client inform but rewarded only in case not max level
-    uint32 xp = uint32(pQuest->XPValue(this) * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_QUEST));
+    uint32 xp = uint32(pQuest->XPValue(this) * sWorld.getConfig(CONFIG_FLOAT_RATE_XP_QUEST) * catchUpXpBonus);
 
     if (getLevel() < sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
     {
