@@ -238,6 +238,12 @@ uint32 Quest::XPValue(Player* pPlayer) const
             baseLevel = QuestLevel;
         }
 
+        if (pPlayer->IsParangon())
+        {
+            baseLevel = QuestLevel;
+            playerLevel = QuestLevel;
+        }
+
         if (((baseLevel - playerLevel) + 10) * 2 > 10)
         {
             baseLevel = playerLevel;
@@ -321,6 +327,13 @@ uint32 Quest::XPValue(Player* pPlayer) const
             {
                 realXP = ((rawXP + 2) / 5 * 5);
             }
+        }
+
+        if (pPlayer->IsParangon())
+        {
+            int32 currentLevelTotalXp = sObjectMgr.GetXPForLevel(pPlayer->getLevel());
+            int32 questLevelTotalXp = QuestLevel > 0 ? sObjectMgr.GetXPForLevel(QuestLevel) : 0;
+            realXP = ((realXP * currentLevelTotalXp) / questLevelTotalXp);
         }
 
         return realXP;

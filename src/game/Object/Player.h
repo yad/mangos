@@ -1221,6 +1221,7 @@ class Player : public Unit
         void GiveXP(uint32 xp, Unit* victim);
         void GiveLevel(uint32 level);   /* DO NOT REMOVE: Used for Eluna compatibility */
         void SetLevel(uint32 level);
+        bool IsParangon() const;
 
         void InitStatsForLevel(bool reapplyMods = false);
 

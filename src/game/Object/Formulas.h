@@ -178,7 +178,28 @@ namespace MaNGOS
                         return 0;
                     }
 
-            uint32 xp_gain = BaseGain(pl->getLevel(), u->getLevel(), GetContentLevelsForMapAndZone(pl->GetMapId(), pl->GetZoneId()));
+            uint32 xp_gain = 0;
+            if (pl->IsParangon())
+            {
+                uint32 level = pl->getLevel();
+                if (level >= 70)
+                {
+                    xp_gain = BaseGain(level, level, CONTENT_71_80);
+                }
+                else if (level >= 60)
+                {
+                    xp_gain = BaseGain(level, level, CONTENT_61_70);
+                }
+                else
+                {
+                    xp_gain = BaseGain(level, level, CONTENT_1_60);
+                }
+            }
+            else
+            {
+                xp_gain = BaseGain(pl->getLevel(), u->getLevel(), GetContentLevelsForMapAndZone(pl->GetMapId(), pl->GetZoneId()));
+            }
+
             if (xp_gain == 0)
             {
                 return 0;

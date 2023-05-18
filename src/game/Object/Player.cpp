@@ -3011,6 +3011,16 @@ void Player::SetLevel(uint32 level)
     GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
 }
 
+bool Player::IsParangon() const
+{
+    if (sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL) == STRONG_MAX_LEVEL)
+    {
+        return false;
+    }
+
+    return getLevel() >= sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL);
+}
+
 void Player::SetFreeTalentPoints(uint32 points)
 {
     // Used by Eluna

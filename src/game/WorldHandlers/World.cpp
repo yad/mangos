@@ -864,6 +864,8 @@ void World::LoadConfigSettings(bool reload)
 
     setConfig(CONFIG_UINT32_LOG_WHISPERS,             "LogWhispers", 1);
 
+    setConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL,      "Custom.ParangonModeLevel", STRONG_MAX_LEVEL);
+
     setConfig(CONFIG_BOOL_PET_UNSUMMON_AT_MOUNT,      "PetUnsummonAtMount", true);
 
     setConfig(CONFIG_FLOAT_SPEED_GAME,                    "Custom.SpeedGame",                   1.0f);
