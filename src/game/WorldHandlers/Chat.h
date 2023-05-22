@@ -434,6 +434,7 @@ class ChatHandler
         bool HandleQuestAddCommand(char* args);
         bool HandleQuestRemoveCommand(char* args);
         bool HandleQuestCompleteCommand(char* args);
+        bool HandleQuestStatusCommand(char* args);
 
         bool HandleReloadAllCommand(char* args);
         bool HandleReloadAllAchievementCommand(char* args);

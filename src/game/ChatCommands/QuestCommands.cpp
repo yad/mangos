@@ -235,3 +235,51 @@ bool ChatHandler::HandleQuestCompleteCommand(char* args)
     player->CompleteQuest(entry, QUEST_STATUS_FORCE_COMPLETE);
     return true;
 }
+
+bool ChatHandler::HandleQuestStatusCommand(char* args)
+{
+    Player* player = getSelectedPlayer();
+    if (!player)
+    {
+        player = m_session->GetPlayer();
+    }
+
+    if (!player)
+    {
+        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    // .quest status #entry'
+    // number or [name] Shift-click form |color|Hquest:quest_id:quest_level|h[name]|h|r
+    uint32 entry;
+    if (!ExtractUint32KeyFromLink(&args, "Hquest", entry))
+    {
+        return false;
+    }
+
+    Quest const* pQuest = sObjectMgr.GetQuestTemplate(entry);
+    if (!pQuest)
+    {
+        PSendSysMessage(LANG_COMMAND_QUEST_NOTFOUND, entry);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    PSendSysMessage("Quest [%u]: IsActiveQuest '%u' / IsTakenQuest '%u' / IsCompletedQuest '%u' / CanSeeStartQuest '%u' / SatisfyQuestLevel '%u' / CanTakeQuest '%u' / CanAddQuest '%u' / GetQuestStatus '%u' / CanCompleteQuest '%u' / IsActive '%u'.",
+        entry,
+        player->IsActiveQuest(entry),
+        player->IsCurrentQuest(entry, 1),
+        player->IsCurrentQuest(entry, 2),
+        player->CanSeeStartQuest(pQuest),
+        player->SatisfyQuestLevel(pQuest, false),
+        player->CanTakeQuest(pQuest, false),
+        player->CanAddQuest(pQuest, false),
+        player->GetQuestStatus(entry),
+        player->CanCompleteQuest(entry),
+        pQuest->IsActive()
+    );
+
+    return true;
+}
