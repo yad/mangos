@@ -15825,6 +15825,14 @@ void Player::PrepareQuestMenu(ObjectGuid guid)
         {
             qm.AddMenuItem(quest_id, 2);
         }
+        // else if (pQuest->IsAutoComplete() && CanTakeQuest(pQuest, false))
+        // {
+        //     qm.AddMenuItem(quest_id, 4);
+        // }
+        // else if (status == QUEST_STATUS_NONE && CanTakeQuest(pQuest, false))
+        // {
+        //     qm.AddMenuItem(quest_id, 2);
+        // }
     }
 
     for (QuestRelationsMap::const_iterator itr = rbounds.first; itr != rbounds.second; ++itr)
