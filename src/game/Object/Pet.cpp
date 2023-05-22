@@ -657,6 +657,14 @@ void Pet::RegenerateAll(uint32 update_diff)
 
 void Pet::LooseHappiness()
 {
+    Unit* owner = GetOwner();
+    Player* p_owner = (owner && owner->GetTypeId() == TYPEID_PLAYER) ? (Player*)owner : NULL;
+    if (p_owner && p_owner->IsParangon() && !IsInCombat())
+    {
+        ModifyPower(POWER_HAPPINESS, 10000);
+        return;
+    }
+
     uint32 curValue = GetPower(POWER_HAPPINESS);
     if (curValue <= 0)
     {
