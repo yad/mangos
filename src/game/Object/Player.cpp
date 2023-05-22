@@ -3013,7 +3013,7 @@ void Player::SetLevel(uint32 level)
 
 bool Player::IsParangon() const
 {
-    if (sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL) == STRONG_MAX_LEVEL)
+    if (sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL) == 0)
     {
         return false;
     }

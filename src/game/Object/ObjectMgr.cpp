@@ -3080,10 +3080,27 @@ void ObjectMgr::LoadPetLevelInfo()
         // fill level gaps
         for (uint32 level = 1; level < sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL); ++level)
         {
-            if (pInfo[level].health == 0)
+            if (sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL) == 0)
             {
-                sLog.outErrorDb("Creature %u has no data for Level %i pet stats data, using data of Level %i.", itr->first, level + 1, level);
-                pInfo[level] = pInfo[level - 1];
+                if (pInfo[level].health == 0)
+                {
+                    sLog.outErrorDb("Creature %u has no data for Level %i pet stats data, using data of Level %i.", itr->first, level + 1, level);
+                    pInfo[level] = pInfo[level - 1];
+                }
+            }
+            else
+            {
+                if (level > sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL))
+                {
+                    pInfo[level] = pInfo[level - 1];
+                    pInfo[level].armor *= 1.01f;
+                    pInfo[level].health *= 1.01f;
+                    pInfo[level].mana *= 1.01f;
+                    for (int i = 0; i < MAX_STATS; ++i)
+                    {
+                        pInfo[level].stats[i] *= 1.01f;
+                    }
+                }
             }
         }
     }
@@ -3488,10 +3505,22 @@ void ObjectMgr::LoadPlayerInfo()
         // fill level gaps
         for (uint32 level = 1; level < sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL); ++level)
         {
-            if (pClassInfo->levelInfo[level].basehealth == 0)
+            if (sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL) == 0)
             {
-                sLog.outErrorDb("Class %i Level %i does not have health/mana data. Using stats data of level %i.", class_, level + 1, level);
-                pClassInfo->levelInfo[level] = pClassInfo->levelInfo[level - 1];
+                if (pClassInfo->levelInfo[level].basehealth == 0)
+                {
+                    sLog.outErrorDb("Class %i Level %i does not have health/mana data. Using stats data of level %i.", class_, level + 1, level);
+                    pClassInfo->levelInfo[level] = pClassInfo->levelInfo[level - 1];
+                }
+            }
+            else
+            {
+                if (level > sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL))
+                {
+                    pClassInfo->levelInfo[level] = pClassInfo->levelInfo[level - 1];
+                    pClassInfo->levelInfo[level].basehealth *= 1.01f;
+                    pClassInfo->levelInfo[level].basemana *= 1.01f;
+                }
             }
         }
     }
@@ -3625,10 +3654,25 @@ void ObjectMgr::LoadPlayerInfo()
             // fill level gaps
             for (uint32 level = 1; level < sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL); ++level)
             {
-                if (pInfo->levelInfo[level].stats[0] == 0)
+                if (sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL) == 0)
                 {
-                    sLog.outErrorDb("Race %i Class %i Level %i does not have stats data. Using stats data of level %i.", race, class_, level + 1, level);
-                    pInfo->levelInfo[level] = pInfo->levelInfo[level - 1];
+                    if (pInfo->levelInfo[level].stats[0] == 0)
+                    {
+                        sLog.outErrorDb("Race %i Class %i Level %i does not have stats data. Using stats data of level %i.", race, class_, level + 1, level);
+                        pInfo->levelInfo[level] = pInfo->levelInfo[level - 1];
+                    }
+                }
+                else
+                {
+                    if (level > sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL))
+                    {
+                        float statsBonus = 1.0f + sWorld.getConfig(CONFIG_FLOAT_PARANGON_STATS_PER_LEVEL);
+                        pInfo->levelInfo[level] = pInfo->levelInfo[level - 1];
+                        for (int i = 0; i < MAX_STATS; ++i)
+                        {
+                            pInfo->levelInfo[level].stats[i] *= statsBonus;
+                        }
+                    }
                 }
             }
         }
@@ -3696,10 +3740,21 @@ void ObjectMgr::LoadPlayerInfo()
     // fill level gaps
     for (uint32 level = 1; level < sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL); ++level)
     {
-        if (mPlayerXPperLevel[level] == 0)
+        if (sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL) == 0)
         {
-            sLog.outErrorDb("Level %i does not have XP for level data. Using data of level [%i] + 100.", level + 1, level);
-            mPlayerXPperLevel[level] = mPlayerXPperLevel[level - 1] + 100;
+            if (mPlayerXPperLevel[level] == 0)
+            {
+                sLog.outErrorDb("Level %i does not have XP for level data. Using data of level [%i] + 100.", level + 1, level);
+                mPlayerXPperLevel[level] = mPlayerXPperLevel[level - 1];
+            }
+        }
+        else
+        {
+            if (level > sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL))
+            {
+                mPlayerXPperLevel[level] = mPlayerXPperLevel[level - 1];
+                mPlayerXPperLevel[level] *= 1.01f;
+            }
         }
     }
 }
