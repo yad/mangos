@@ -3093,13 +3093,6 @@ void ObjectMgr::LoadPetLevelInfo()
                 if (level > sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL))
                 {
                     pInfo[level] = pInfo[level - 1];
-                    pInfo[level].armor *= 1.01f;
-                    pInfo[level].health *= 1.01f;
-                    pInfo[level].mana *= 1.01f;
-                    for (int i = 0; i < MAX_STATS; ++i)
-                    {
-                        pInfo[level].stats[i] *= 1.01f;
-                    }
                 }
             }
         }
@@ -3518,8 +3511,6 @@ void ObjectMgr::LoadPlayerInfo()
                 if (level > sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL))
                 {
                     pClassInfo->levelInfo[level] = pClassInfo->levelInfo[level - 1];
-                    pClassInfo->levelInfo[level].basehealth *= 1.01f;
-                    pClassInfo->levelInfo[level].basemana *= 1.01f;
                 }
             }
         }
@@ -3666,12 +3657,7 @@ void ObjectMgr::LoadPlayerInfo()
                 {
                     if (level > sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL))
                     {
-                        float statsBonus = 1.0f + sWorld.getConfig(CONFIG_FLOAT_PARANGON_STATS_PER_LEVEL);
                         pInfo->levelInfo[level] = pInfo->levelInfo[level - 1];
-                        for (int i = 0; i < MAX_STATS; ++i)
-                        {
-                            pInfo->levelInfo[level].stats[i] *= statsBonus;
-                        }
                     }
                 }
             }
@@ -3753,7 +3739,6 @@ void ObjectMgr::LoadPlayerInfo()
             if (level > sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL))
             {
                 mPlayerXPperLevel[level] = mPlayerXPperLevel[level - 1];
-                mPlayerXPperLevel[level] *= 1.01f;
             }
         }
     }

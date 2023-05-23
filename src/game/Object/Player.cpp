@@ -8479,6 +8479,19 @@ void Player::_ApplyItemBonuses(ItemPrototype const* proto, uint8 slot, bool appl
             continue;
         }
 
+        if (IsParangon())
+        {
+            int32 oldValue = val;
+
+            uint32 diffLevel = getLevel() - sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL);
+            val *= (1.0f + (sWorld.getConfig(CONFIG_FLOAT_PARANGON_STATS_PER_LEVEL) * diffLevel));
+
+            sLog.outError("Player::_ApplyItemBonuses statType %u, oldValue %f, newValue %f.",
+                        statType,
+                        oldValue,
+                        val);
+        }
+
         switch (statType)
         {
             case ITEM_MOD_MANA:
