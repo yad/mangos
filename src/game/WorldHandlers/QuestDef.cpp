@@ -334,6 +334,8 @@ uint32 Quest::XPValue(Player* pPlayer) const
             int32 currentLevelTotalXp = sObjectMgr.GetXPForLevel(pPlayer->getLevel());
             int32 questLevelTotalXp = QuestLevel > 0 ? sObjectMgr.GetXPForLevel(QuestLevel) : 0;
             realXP = ((realXP * currentLevelTotalXp) / questLevelTotalXp);
+            int32 maxXP = currentLevelTotalXp / 20;
+            realXP = realXP > maxXP ? maxXP : realXP;
         }
 
         return realXP;
