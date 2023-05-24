@@ -3739,6 +3739,7 @@ void ObjectMgr::LoadPlayerInfo()
             if (level > sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL))
             {
                 mPlayerXPperLevel[level] = mPlayerXPperLevel[level - 1];
+                mPlayerXPperLevel[level] *= 1.01f;
             }
         }
     }
