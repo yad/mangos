@@ -2992,6 +2992,25 @@ void Player::SetLevel(uint32 level)
 
     _ApplyAllLevelScaleItemMods(true);
 
+    if (IsParangon())
+    {
+        UpdateAllStats();
+
+        // set current level health and mana/energy to maximum after applying all mods.
+        if (IsAlive())
+        {
+            SetHealth(GetMaxHealth());
+        }
+        SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
+        SetPower(POWER_ENERGY, GetMaxPower(POWER_ENERGY));
+        if (GetPower(POWER_RAGE) > GetMaxPower(POWER_RAGE))
+        {
+            SetPower(POWER_RAGE, GetMaxPower(POWER_RAGE));
+        }
+        SetPower(POWER_FOCUS, 0);
+        SetPower(POWER_HAPPINESS, 0);
+    }
+
     // update level to hunter/summon pet
     if (Pet* pet = GetPet())
     {
@@ -6563,6 +6582,11 @@ void Player::UpdateCombatSkills(Unit* pVictim, WeaponAttackType attType, bool de
     uint32 plevel = getLevel();                             // if defense than pVictim == attacker
     uint32 greylevel = MaNGOS::XP::GetGrayLevel(plevel);
     uint32 moblevel = pVictim->GetLevelForTarget(this);
+    if (IsParangon())
+    {
+        moblevel = plevel;
+    }
+
     if (moblevel < greylevel)
     {
         return;
@@ -8486,7 +8510,7 @@ void Player::_ApplyItemBonuses(ItemPrototype const* proto, uint8 slot, bool appl
             uint32 diffLevel = getLevel() - sWorld.getConfig(CONFIG_UINT32_PARANGON_MODE_LEVEL);
             val *= (1.0f + (sWorld.getConfig(CONFIG_FLOAT_PARANGON_STATS_PER_LEVEL) * diffLevel));
 
-            sLog.outError("Player::_ApplyItemBonuses statType %u, oldValue %f, newValue %f.",
+            sLog.outError("Player::_ApplyItemBonuses statType %u, oldValue %u, newValue %u.",
                         statType,
                         oldValue,
                         val);
@@ -9532,7 +9556,14 @@ void Player::_ApplyAllLevelScaleItemMods(bool apply)
                 continue;
             }
 
-            _ApplyItemBonuses(proto, i, apply, true);
+            if (IsParangon())
+            {
+                _ApplyItemBonuses(proto, i, apply, false);
+            }
+            else
+            {
+                _ApplyItemBonuses(proto, i, apply, true);
+            }
         }
     }
 }
