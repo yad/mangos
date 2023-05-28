@@ -240,8 +240,15 @@ uint32 Quest::XPValue(Player* pPlayer) const
 
         if (pPlayer->IsParangon())
         {
-            baseLevel = QuestLevel;
-            playerLevel = QuestLevel;
+            if (QuestLevel != -1)
+            {
+                baseLevel = QuestLevel;
+                playerLevel = QuestLevel;
+            }
+            else
+            {
+                baseLevel = playerLevel;
+            }
         }
 
         if (((baseLevel - playerLevel) + 10) * 2 > 10)
