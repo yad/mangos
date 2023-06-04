@@ -384,13 +384,6 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (sWorld.getConfig(CONFIG_BOOL_NO_COOLDOWN))
-    {
-        _player->RemoveSpellCooldown(spellId, true);
-    }
-
-    _player->SetLatestSpell(spellId);
-
     Aura* triggeredByAura = mover->GetTriggeredByClientAura(spellId);
 
     if (mover->GetTypeId() == TYPEID_PLAYER)

@@ -1531,7 +1531,7 @@ void Player::Update(uint32 update_diff, uint32 p_time)
             RegenerateAll();
         }
 
-        if (GetLatestSpell() != 0 && sWorld.getConfig(CONFIG_BOOL_NO_COOLDOWN))
+        if (GetLatestSpell() != 0 && sWorld.getConfig(CONFIG_BOOL_NO_GLOBAL_COOLDOWN))
         {
            RemoveSpellCooldown(GetLatestSpell(), true);
            SetLatestSpell(0);
@@ -22924,11 +22924,6 @@ void Player::AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 it
 
 void Player::AddSpellCooldown(uint32 spellid, uint32 itemid, time_t end_time)
 {
-    if (sWorld.getConfig(CONFIG_BOOL_NO_COOLDOWN))
-    {
-        return;
-    }
-
     SpellCooldown sc;
     sc.end = end_time;
     sc.itemid = itemid;

@@ -3503,7 +3503,15 @@ void Spell::prepare(SpellCastTargets const* targets, Aura* triggeredByAura)
         // will show cast bar
         SendSpellStart();
 
-        TriggerGlobalCooldown();
+        if (m_caster->GetTypeId() && sWorld.getConfig(CONFIG_BOOL_NO_GLOBAL_COOLDOWN)
+            && m_spellInfo->RecoveryTime == 0 && m_spellInfo->CategoryRecoveryTime == 0)
+        {
+            ((Player*)m_caster)->SetLatestSpell(m_spellInfo->Id);
+        }
+        else
+        {
+            TriggerGlobalCooldown();
+        }
     }
     // execute triggered without cast time explicitly in call point
     else if (m_timer == 0)
@@ -3513,14 +3521,6 @@ void Spell::prepare(SpellCastTargets const* targets, Aura* triggeredByAura)
     // else triggered with cast time will execute execute at next tick or later
     // without adding to cast type slot
     // will not show cast bar but will show effects at casting time etc
-
-    if (sWorld.getConfig(CONFIG_BOOL_NO_COOLDOWN))
-    {
-        if(m_caster->GetTypeId() == TYPEID_PLAYER)
-        {
-            ((Player*)m_caster)->RemoveSpellCooldown(m_spellInfo->Id, true);
-        }
-    }
 }
 
 void Spell::cancel()
@@ -5641,7 +5641,7 @@ SpellCastResult Spell::CheckCast(bool strict)
         {
             return SPELL_FAILED_DONT_REPORT;
         }
-        else if (!sWorld.getConfig(CONFIG_BOOL_NO_COOLDOWN))
+        else
         {
             return SPELL_FAILED_NOT_READY;
         }
@@ -5650,10 +5650,7 @@ SpellCastResult Spell::CheckCast(bool strict)
     // check global cooldown
     if (strict && !m_IsTriggeredSpell && HasGlobalCooldown())
     {
-        if (!sWorld.getConfig(CONFIG_BOOL_NO_COOLDOWN))
-        {
-            return SPELL_FAILED_NOT_READY;
-        }
+        return SPELL_FAILED_NOT_READY;
     }
 
     // only allow triggered spells if at an ended battleground
