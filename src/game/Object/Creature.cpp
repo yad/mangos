@@ -163,7 +163,11 @@ Creature::Creature(CreatureSubtype subtype) : Unit(),
     m_meleeDamageSchoolMask(SPELL_SCHOOL_MASK_NORMAL), m_originalEntry(0),
     m_creatureInfo(NULL)
 {
-    m_regenTimer = 200;
+    for (int i = 0; i < MAX_REGENS; ++i)
+    {
+        m_regenTimer[i] = 200;
+    }
+
     m_valuesCount = UNIT_END;
 
     for (int i = 0; i < CREATURE_MAX_SPELLS; ++i)
@@ -766,33 +770,32 @@ void Creature::StopGroupLoot()
 
 void Creature::RegenerateAll(uint32 update_diff)
 {
-    if (m_regenTimer > 0)
+    if (m_regenTimer[REGEN_HEALTH] > 0)
     {
-        if (update_diff >= m_regenTimer)
+        if (update_diff >= m_regenTimer[REGEN_HEALTH])
         {
-            m_regenTimer = 0;
+            m_regenTimer[REGEN_HEALTH] = 0;
         }
         else
         {
-            m_regenTimer -= update_diff;
+            m_regenTimer[REGEN_HEALTH] -= update_diff;
         }
     }
-    if (m_regenTimer != 0)
+
+    if (m_regenTimer[REGEN_HEALTH] == 0)
     {
-        return;
+        if (!IsInCombat() || IsPolymorphed())
+        {
+            RegenerateHealth();
+        }
+
+        m_regenTimer[REGEN_HEALTH] = REGEN_TIME_FULL;
     }
 
-    if (!IsInCombat() || IsPolymorphed())
-    {
-        RegenerateHealth();
-    }
-
-    RegeneratePower();
-
-    m_regenTimer = REGEN_TIME_FULL;
+    RegeneratePower(update_diff);
 }
 
-void Creature::RegeneratePower()
+void Creature::RegeneratePower(uint32 update_diff)
 {
     if (!IsRegeneratingPower())
     {
@@ -804,6 +807,23 @@ void Creature::RegeneratePower()
     uint32 maxValue = GetMaxPower(powerType);
 
     if (curValue >= maxValue)
+    {
+        return;
+    }
+
+    if (m_regenTimer[powerType] > 0)
+    {
+        if (update_diff >= m_regenTimer[powerType])
+        {
+            m_regenTimer[powerType] = 0;
+        }
+        else
+        {
+            m_regenTimer[powerType] -= update_diff;
+        }
+    }
+
+    if (m_regenTimer[powerType] != 0)
     {
         return;
     }
@@ -862,6 +882,30 @@ void Creature::RegeneratePower()
     }
 
     ModifyPower(powerType, int32(addValue));
+
+    if (IsPlayerOrPlayerPet())
+    {
+        switch (powerType)
+        {
+            case POWER_MANA:
+                m_regenTimer[powerType] = REGEN_TIME_FULL / sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_MANA);
+                break;
+            case POWER_ENERGY:
+                // ToDo: for vehicle this is different - NEEDS TO BE FIXED!
+                m_regenTimer[powerType] = REGEN_TIME_FULL / sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_ENERGY);
+                break;
+            case POWER_FOCUS:
+                m_regenTimer[powerType] = REGEN_TIME_FULL / sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_FOCUS);
+                break;
+            default:
+                m_regenTimer[powerType] = REGEN_TIME_FULL;
+                break;
+        }
+    }
+    else
+    {
+        m_regenTimer[powerType] = REGEN_TIME_FULL;
+    }
 }
 
 void Creature::RegenerateHealth()

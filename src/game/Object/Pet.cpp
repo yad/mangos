@@ -42,7 +42,10 @@ Pet::Pet(PetType type) :
     m_declinedname(NULL), m_petModeFlags(PET_MODE_DEFAULT)
 {
     m_name = "Pet";
-    m_regenTimer = 4000;
+    for (int i = 0; i < MAX_REGENS; ++i)
+    {
+        m_regenTimer[i] = 4000;
+    }
 
     // pets always have a charminfo, even if they are not actually charmed
     CharmInfo* charmInfo = InitCharmInfo(this);
@@ -623,21 +626,21 @@ void Pet::Update(uint32 update_diff, uint32 diff)
 void Pet::RegenerateAll(uint32 update_diff)
 {
     // regenerate focus for hunter pets or energy for deathknight's ghoul
-    if (m_regenTimer <= update_diff)
+    if (m_regenTimer[REGEN_HEALTH] <= update_diff)
     {
         if (!IsInCombat() || IsPolymorphed())
         {
             RegenerateHealth();
         }
 
-        RegeneratePower();
-
-        m_regenTimer = 4000;
+        m_regenTimer[REGEN_HEALTH] = 4000;
     }
     else
     {
-        m_regenTimer -= update_diff;
+        m_regenTimer[REGEN_HEALTH] -= update_diff;
     }
+
+    RegeneratePower(update_diff);
 
     if (getPetType() != HUNTER_PET)
     {

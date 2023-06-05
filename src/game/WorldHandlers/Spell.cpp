@@ -3503,7 +3503,7 @@ void Spell::prepare(SpellCastTargets const* targets, Aura* triggeredByAura)
         // will show cast bar
         SendSpellStart();
 
-        if (m_caster->GetTypeId() && sWorld.getConfig(CONFIG_BOOL_NO_GLOBAL_COOLDOWN)
+        if (m_caster->GetTypeId() == TYPEID_PLAYER && sWorld.getConfig(CONFIG_BOOL_NO_GLOBAL_COOLDOWN)
             && m_spellInfo->RecoveryTime == 0 && m_spellInfo->CategoryRecoveryTime == 0)
         {
             ((Player*)m_caster)->SetLatestSpell(m_spellInfo->Id);
@@ -5365,6 +5365,7 @@ SpellCastResult Spell::CheckOrTakeRunePower(bool take)
         // you can gain some runic power when use runes
         float rp = float(src->runePowerGain);
         rp *= sWorld.getConfig(CONFIG_FLOAT_RATE_POWER_RUNICPOWER_INCOME);
+        rp *= sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_RUNICPOWER_INCOME);
         plr->ModifyPower(POWER_RUNIC_POWER, (int32)rp);
     }
 
@@ -7817,7 +7818,7 @@ SpellCastResult Spell::CheckPower()
     if (m_powerCost > 0 && m_caster->GetTypeId() == TYPEID_PLAYER)
     {
         Player* playerCaster = (Player*)m_caster;
-        uint32 diff = REGEN_TIME_FULL - m_caster->GetRegenTimer();
+        uint32 diff = REGEN_TIME_FULL - m_caster->GetRegenTimer(Regens(m_spellInfo->powerType));
         if (diff >= REGEN_TIME_PRECISE)
         {
             playerCaster->RegenerateAll(diff);

@@ -3858,7 +3858,7 @@ uint32  GetPower(Powers power) const { return GetUInt32Value(UNIT_FIELD_POWER1 +
         }
         bool IsUnderLastManaUseEffect() const;
 
-        uint32 GetRegenTimer() const { return m_regenTimer; }
+        uint32 GetRegenTimer(Regens regen) const { return m_regenTimer[regen]; }
 
         void SetContestedPvP(Player* attackedPlayer = NULL);
 
@@ -3993,7 +3993,7 @@ uint32  GetPower(Powers power) const { return GetUInt32Value(UNIT_FIELD_POWER1 +
         MotionMaster i_motionMaster;
 
         uint32 m_reactiveTimer[MAX_REACTIVE];
-        uint32 m_regenTimer;
+        uint32 m_regenTimer[MAX_REGENS];
         uint32 m_lastManaUseTimer;
 
         VehicleInfo* m_vehicleInfo;

@@ -175,6 +175,20 @@ enum Powers
 
 #define MAX_POWERS                        7
 
+enum Regens
+{
+    REGEN_MANA                          = 0,         ///< The most common one, mobs usually have this or rage
+    REGEN_RAGE                          = 1,         ///< This is what warriors use to cast their spells
+    REGEN_FOCUS                         = 2,         ///< Used by hunters after Cataclysm (4.x)
+    REGEN_ENERGY                        = 3,         ///< Used by rouges to do their spells
+    REGEN_HAPPINESS                     = 4,         ///< Hunters pet's happiness affect their damage
+    REGEN_RUNE                          = 5,            // UNIT_FIELD_POWER6
+    REGEN_RUNIC_POWER                   = 6,            // UNIT_FIELD_POWER7
+    REGEN_HEALTH                        = 7 ///< Health, everyone has this (-2 as signed value)
+};
+
+#define MAX_REGENS                        8
+
 /**
  * The different spell schools that are available, used in both damage calculation
  * and spell casting to decide what should be affected, the \ref SpellSchools::SPELL_SCHOOL_NORMAL

@@ -517,6 +517,16 @@ void World::LoadConfigSettings(bool reload)
     setConfigPos(CONFIG_FLOAT_CATCH_UP_BONUS_XP_PER_CHARACTER, "Custom.CatchUpBonusXpPerCharacter", 0.0f);
     setConfigPos(CONFIG_FLOAT_PARANGON_STATS_PER_LEVEL,        "Custom.ParangonStatsPerLevel", 0.0f);
 
+    setConfigPos(CONFIG_FLOAT_REGEN_HEALTH,                  "Custom.Regen.Health", 1.0f);
+    setConfigPos(CONFIG_FLOAT_REGEN_POWER_MANA,              "Custom.Regen.Mana", 1.0f);
+    setConfig(CONFIG_FLOAT_REGEN_POWER_RAGE_INCOME,          "Custom.Regen.Rage.Income", 1.0f);
+    setConfigPos(CONFIG_FLOAT_REGEN_POWER_RAGE_LOSS,         "Custom.Regen.Rage.Loss", 1.0f);
+    setConfig(CONFIG_FLOAT_REGEN_POWER_RUNICPOWER_INCOME,    "Custom.Regen.RunicPower.Income", 1.0f);
+    setConfigPos(CONFIG_FLOAT_REGEN_POWER_RUNICPOWER_LOSS,   "Custom.Regen.RunicPower.Loss",   1.0f);
+    setConfig(CONFIG_FLOAT_REGEN_POWER_FOCUS,                "Custom.Regen.Focus", 1.0f);
+    setConfig(CONFIG_FLOAT_REGEN_POWER_ENERGY,               "Custom.Regen.Energy", 1.0f);
+    setConfig(CONFIG_FLOAT_REGEN_POWER_RUNES,                "Custom.Regen.Runes", 1.0f);
+
     setConfigMinMax(CONFIG_FLOAT_RATE_TARGET_POS_RECALCULATION_RANGE, "TargetPosRecalculateRange", 1.5f, CONTACT_DISTANCE, ATTACK_DISTANCE);
 
     setConfigPos(CONFIG_FLOAT_RATE_DURABILITY_LOSS_DAMAGE, "DurabilityLossChance.Damage", 0.5f);

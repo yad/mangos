@@ -468,7 +468,11 @@ Player::Player(WorldSession* session): Unit(), m_mover(this), m_camera(this), m_
     m_usedTalentCount = 0;
     m_questRewardTalentCount = 0;
 
-    m_regenTimer = 0;
+    for (int i = 0; i < MAX_REGENS; ++i)
+    {
+        m_regenTimer[i] = 0;
+    }
+
     m_weaponChangeTimer = 0;
 
     m_zoneUpdateId = 0;
@@ -1441,15 +1445,18 @@ void Player::Update(uint32 update_diff, uint32 p_time)
         }
     }
 
-    if (m_regenTimer)
+    for (int i = 0; i < MAX_REGENS; ++i)
     {
-        if (update_diff >= m_regenTimer)
+        if (m_regenTimer[i])
         {
-            m_regenTimer = 0;
-        }
-        else
-        {
-            m_regenTimer -= update_diff;
+            if (update_diff >= m_regenTimer[i])
+            {
+                m_regenTimer[i] = 0;
+            }
+            else
+            {
+                m_regenTimer[i] -= update_diff;
+            }
         }
     }
 
@@ -1526,10 +1533,7 @@ void Player::Update(uint32 update_diff, uint32 p_time)
             SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
         }
 
-        if (!m_regenTimer)
-        {
-            RegenerateAll();
-        }
+        RegenerateAll();
 
         if (GetLatestSpell() != 0 && sWorld.getConfig(CONFIG_BOOL_NO_GLOBAL_COOLDOWN))
         {
@@ -2314,37 +2318,81 @@ void Player::RewardRage(uint32 damage, uint32 weaponSpeedHitFactor, bool attacke
     }
 
     addRage *= sWorld.getConfig(CONFIG_FLOAT_RATE_POWER_RAGE_INCOME);
+    addRage *= sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_RAGE_INCOME);
 
     ModifyPower(POWER_RAGE, uint32(addRage * 10));
 }
 
 void Player::RegenerateAll(uint32 diff)
 {
-    // Not in combat or they have regeneration
-    if (!IsInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT) ||
-        HasAuraType(SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT) || IsPolymorphed())
+    if (!m_regenTimer[REGEN_HEALTH])
     {
-        RegenerateHealth(diff);
-        if (!IsInCombat() && !HasAuraType(SPELL_AURA_INTERRUPT_REGEN))
+        // Not in combat or they have regeneration
+        if (!IsInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT) ||
+            HasAuraType(SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT) || IsPolymorphed())
         {
-            Regenerate(POWER_RAGE, diff);
-            if (getClass() == CLASS_DEATH_KNIGHT)
+            RegenerateHealth(diff);
+        }
+
+        m_regenTimer[REGEN_HEALTH] = REGEN_TIME_FULL / sWorld.getConfig(CONFIG_FLOAT_REGEN_HEALTH);
+    }
+
+    if (!m_regenTimer[REGEN_RAGE])
+    {
+        // Not in combat or they have regeneration
+        if (!IsInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT) ||
+            HasAuraType(SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT) || IsPolymorphed())
+        {
+            if (!IsInCombat() && !HasAuraType(SPELL_AURA_INTERRUPT_REGEN))
             {
-                Regenerate(POWER_RUNIC_POWER, diff);
+                Regenerate(POWER_RAGE, diff);
             }
         }
+
+        m_regenTimer[REGEN_RAGE] = REGEN_TIME_FULL;
     }
 
-    Regenerate(POWER_ENERGY, diff);
-
-    Regenerate(POWER_MANA, diff);
-
-    if (getClass() == CLASS_DEATH_KNIGHT)
+    if (!m_regenTimer[REGEN_RUNIC_POWER])
     {
-        Regenerate(POWER_RUNE, diff);
+        // Not in combat or they have regeneration
+        if (!IsInCombat() || HasAuraType(SPELL_AURA_MOD_REGEN_DURING_COMBAT) ||
+            HasAuraType(SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT) || IsPolymorphed())
+        {
+            if (!IsInCombat() && !HasAuraType(SPELL_AURA_INTERRUPT_REGEN))
+            {
+                if (getClass() == CLASS_DEATH_KNIGHT)
+                {
+                    Regenerate(POWER_RUNIC_POWER, diff);
+                }
+            }
+        }
+
+        m_regenTimer[REGEN_RUNIC_POWER] = REGEN_TIME_FULL;
     }
 
-    m_regenTimer = REGEN_TIME_FULL;
+    if (!m_regenTimer[REGEN_ENERGY])
+    {
+        Regenerate(POWER_ENERGY, diff);
+
+        m_regenTimer[REGEN_ENERGY] = REGEN_TIME_FULL / sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_ENERGY);
+    }
+
+    if (!m_regenTimer[REGEN_MANA])
+    {
+        Regenerate(POWER_MANA, diff);
+
+        m_regenTimer[REGEN_MANA] = REGEN_TIME_FULL / sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_MANA);
+    }
+
+    if (!m_regenTimer[REGEN_RUNE])
+    {
+        if (getClass() == CLASS_DEATH_KNIGHT)
+        {
+            Regenerate(POWER_RUNE, diff);
+        }
+
+        m_regenTimer[REGEN_RUNE] = REGEN_TIME_FULL / sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_RUNES);
+    }
 }
 
 // diff contains the time in milliseconds since last regen.

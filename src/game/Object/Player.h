@@ -1662,7 +1662,10 @@ class Player : public Unit
         void RegenerateHealth(uint32 diff);
         void setRegenTimer(uint32 time)
         {
-            m_regenTimer = time;
+            for (int i = 0; i < MAX_REGENS; ++i)
+            {
+                m_regenTimer[i] = time;
+            }
         }
         void setWeaponChangeTimer(uint32 time)
         {
