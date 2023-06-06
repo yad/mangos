@@ -839,6 +839,7 @@ void Creature::RegeneratePower(uint32 update_diff)
                 if (!IsUnderLastManaUseEffect())
                 {
                     float ManaIncreaseRate = sWorld.getConfig(CONFIG_FLOAT_RATE_POWER_MANA);
+                    ManaIncreaseRate /= sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_MANA);
                     float Spirit = GetStat(STAT_SPIRIT);
 
                     addValue = (Spirit / 5.0f + 17.0f) * ManaIncreaseRate;
@@ -852,9 +853,11 @@ void Creature::RegeneratePower(uint32 update_diff)
         case POWER_ENERGY:
             // ToDo: for vehicle this is different - NEEDS TO BE FIXED!
             addValue = 20 * sWorld.getConfig(CONFIG_FLOAT_RATE_POWER_ENERGY);
+            addValue /= sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_ENERGY);
             break;
         case POWER_FOCUS:
             addValue = 24 * sWorld.getConfig(CONFIG_FLOAT_RATE_POWER_FOCUS);
+            addValue /= sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_FOCUS);
             break;
         default:
             return;
@@ -929,6 +932,7 @@ void Creature::RegenerateHealth()
     if (GetCharmerOrOwnerGuid())
     {
         float HealthIncreaseRate = sWorld.getConfig(CONFIG_FLOAT_RATE_HEALTH);
+        HealthIncreaseRate /= sWorld.getConfig(CONFIG_FLOAT_REGEN_HEALTH);
         float Spirit = GetStat(STAT_SPIRIT); //for charmed creatures, spirit = 0!
         if (GetPower(POWER_MANA) > 0)
         {

@@ -5365,7 +5365,7 @@ SpellCastResult Spell::CheckOrTakeRunePower(bool take)
         // you can gain some runic power when use runes
         float rp = float(src->runePowerGain);
         rp *= sWorld.getConfig(CONFIG_FLOAT_RATE_POWER_RUNICPOWER_INCOME);
-        rp *= sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_RUNICPOWER_INCOME);
+        rp /= sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_RUNICPOWER_INCOME);
         plr->ModifyPower(POWER_RUNIC_POWER, (int32)rp);
     }
 

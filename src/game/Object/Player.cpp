@@ -2318,8 +2318,7 @@ void Player::RewardRage(uint32 damage, uint32 weaponSpeedHitFactor, bool attacke
     }
 
     addRage *= sWorld.getConfig(CONFIG_FLOAT_RATE_POWER_RAGE_INCOME);
-    addRage *= sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_RAGE_INCOME);
-
+    addRage /= sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_RAGE_INCOME);
     ModifyPower(POWER_RAGE, uint32(addRage * 10));
 }
 
@@ -2413,6 +2412,7 @@ void Player::Regenerate(Powers power, uint32 diff)
             }
             bool recentCast = IsUnderLastManaUseEffect();
             float ManaIncreaseRate = sWorld.getConfig(CONFIG_FLOAT_RATE_POWER_MANA);
+            ManaIncreaseRate /= sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_MANA);
             if (recentCast)
             {
                 // Mangos Updates Mana in intervals of 2s, which is correct
@@ -2426,17 +2426,20 @@ void Player::Regenerate(Powers power, uint32 diff)
         case POWER_RAGE:                                    // Regenerate rage
         {
             float RageDecreaseRate = sWorld.getConfig(CONFIG_FLOAT_RATE_POWER_RAGE_LOSS);
+            RageDecreaseRate /= sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_RAGE_LOSS);
             addvalue = 20 * RageDecreaseRate;               // 2 rage by tick (= 2 seconds => 1 rage/sec)
         }   break;
         case POWER_ENERGY:                                  // Regenerate energy (rogue)
         {
             float EnergyRate = sWorld.getConfig(CONFIG_FLOAT_RATE_POWER_ENERGY);
+            EnergyRate /= sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_ENERGY);
             addvalue = 20 * EnergyRate;
             break;
         }
         case POWER_RUNIC_POWER:
         {
             float RunicPowerDecreaseRate = sWorld.getConfig(CONFIG_FLOAT_RATE_POWER_RUNICPOWER_LOSS);
+            RunicPowerDecreaseRate /= sWorld.getConfig(CONFIG_FLOAT_REGEN_POWER_RUNICPOWER_LOSS);
             addvalue = 30 * RunicPowerDecreaseRate;         // 3 RunicPower by tick
             break;
         }
@@ -2521,7 +2524,7 @@ void Player::RegenerateHealth(uint32 diff)
     }
 
     float HealthIncreaseRate = sWorld.getConfig(CONFIG_FLOAT_RATE_HEALTH);
-
+    HealthIncreaseRate /= sWorld.getConfig(CONFIG_FLOAT_REGEN_HEALTH);
     float addvalue = 0.0f;
 
     // polymorphed case
