@@ -61,6 +61,7 @@
 #include "OutdoorPvP/OutdoorPvP.h"
 #include "ArenaTeam.h"
 #include "Chat.h"
+#include "revision_data.h"
 #include "Database/DatabaseImpl.h"
 #include "Spell.h"
 #include "ScriptMgr.h"
@@ -4095,12 +4096,11 @@ void Player::removeSpell(uint32 spell_id, bool disabled, bool learn_low_rank, bo
         UpdateFreeTalentPoints(false);
     }
 
-    // update free primary prof.points (if not overflow setting, can be in case GM use before .learn prof. learning)
+    // update free primary prof.points (if any, can be none in case GM .learn prof. learning)
     if (sSpellMgr.IsPrimaryProfessionFirstRankSpell(spell_id))
     {
         uint32 freeProfs = GetFreePrimaryProfessionPoints() + 1;
-        uint32 maxProfs = GetSession()->GetSecurity() < AccountTypes(sWorld.getConfig(CONFIG_UINT32_TRADE_SKILL_GMIGNORE_MAX_PRIMARY_COUNT)) ? sWorld.getConfig(CONFIG_UINT32_MAX_PRIMARY_TRADE_SKILL) : 11;
-        if (freeProfs <= maxProfs)
+        if (freeProfs <= sWorld.getConfig(CONFIG_UINT32_MAX_PRIMARY_TRADE_SKILL))
         {
             SetFreePrimaryProfessions(freeProfs);
         }
@@ -4830,17 +4830,6 @@ TrainerSpellState Player::GetTrainerSpellState(TrainerSpell const* trainer_spell
         return TRAINER_SPELL_RED;
     }
 
-    bool prof = SpellMgr::IsProfessionSpell(trainer_spell->learnedSpell);
-
-    // check level requirement
-    if (!prof || GetSession()->GetSecurity() < AccountTypes(sWorld.getConfig(CONFIG_UINT32_TRADE_SKILL_GMIGNORE_LEVEL)))
-    {
-        if (getLevel() < reqLevel)
-        {
-            return TRAINER_SPELL_RED;
-        }
-    }
-
     if (SpellChainNode const* spell_chain = sSpellMgr.GetSpellChainNode(trainer_spell->learnedSpell))
     {
         // check prev.rank requirement
@@ -4856,12 +4845,18 @@ TrainerSpellState Player::GetTrainerSpellState(TrainerSpell const* trainer_spell
         }
     }
 
+    // check level requirement
+    bool prof = SpellMgr::IsProfessionSpell(trainer_spell->spell);
+    if (prof || trainer_spell->reqLevel && (trainer_spell->reqLevel) < reqLevel)
+    {
+        return TRAINER_SPELL_RED;
+    }
+
     // check skill requirement
-    if (!prof || GetSession()->GetSecurity() < AccountTypes(sWorld.getConfig(CONFIG_UINT32_TRADE_SKILL_GMIGNORE_SKILL)))
-        if (trainer_spell->reqSkill && GetBaseSkillValue(trainer_spell->reqSkill) < trainer_spell->reqSkillValue)
-        {
-            return TRAINER_SPELL_RED;
-        }
+    if (prof || trainer_spell->reqSkill && GetBaseSkillValue(trainer_spell->reqSkill) < trainer_spell->reqSkillValue)
+    {
+        return TRAINER_SPELL_RED;
+    }
 
     // exist, already checked at loading
     SpellEntry const* spell = sSpellStore.LookupEntry(trainer_spell->learnedSpell);
@@ -16521,6 +16516,22 @@ void Player::AddQuest(Quest const* pQuest, Object* questGiver)
     }
 
     UpdateForQuestWorldObjects();
+
+    if (sWorld.getConfig(CONFIG_BOOL_ENABLE_QUEST_TRACKER)) // check if Quest Tracker is enabled
+    {
+        DEBUG_LOG("QUEST TRACKER: Quest Added.");
+
+        static SqlStatementID CHAR_INS_QUEST_TRACK;
+        // prepare Quest Tracker datas
+        SqlStatement stmt = CharacterDatabase.CreateStatement(CHAR_INS_QUEST_TRACK, "INSERT INTO `quest_tracker` (`id`, `character_guid`, `quest_accept_time`, `core_hash`, `core_revision`) VALUES (?, ?, NOW(), ?, ?)");
+        stmt.addUInt32(quest_id);
+        stmt.addUInt32(GetGUIDLow());
+        stmt.addString(REVISION_HASH);
+        stmt.addString(REVISION_DATE);
+
+        // add to Quest Tracker
+        stmt.Execute();
+    }
 }
 
 void Player::CompleteQuest(uint32 quest_id, QuestStatus status)
@@ -16542,6 +16553,19 @@ void Player::CompleteQuest(uint32 quest_id, QuestStatus status)
                 RewardQuest(qInfo, 0, this, false);
             }
         }
+    }
+
+    if (sWorld.getConfig(CONFIG_BOOL_ENABLE_QUEST_TRACKER)) // check if Quest Tracker is enabled
+    {
+        DEBUG_LOG("QUEST TRACKER: Quest Completed.");
+        static SqlStatementID CHAR_UPD_QUEST_TRACK_COMPLETE_TIME;
+        // prepare Quest Tracker datas
+        SqlStatement stmt = CharacterDatabase.CreateStatement(CHAR_UPD_QUEST_TRACK_COMPLETE_TIME, "UPDATE `quest_tracker` SET `quest_complete_time` = NOW() WHERE `id` = ? AND `character_guid` = ? ORDER BY `quest_accept_time` DESC LIMIT 1");
+        stmt.addUInt32(quest_id);
+        stmt.addUInt32(GetGUIDLow());
+
+        // add to Quest Tracker
+        stmt.Execute();
     }
 }
 
@@ -23559,9 +23583,7 @@ void Player::SetPhaseMask(uint32 newPhaseMask, bool update)
 
 void Player::InitPrimaryProfessions()
 {
-    uint32 maxProfs = GetSession()->GetSecurity() < AccountTypes(sWorld.getConfig(CONFIG_UINT32_TRADE_SKILL_GMIGNORE_MAX_PRIMARY_COUNT))
-                      ? sWorld.getConfig(CONFIG_UINT32_MAX_PRIMARY_TRADE_SKILL) : 11;
-    SetFreePrimaryProfessions(maxProfs);
+    SetFreePrimaryProfessions(sWorld.getConfig(CONFIG_UINT32_MAX_PRIMARY_TRADE_SKILL));
 }
 
 void Player::SendComboPoints()
