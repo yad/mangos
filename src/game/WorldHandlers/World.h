@@ -38,6 +38,9 @@
 #include <set>
 #include <list>
 
+#ifdef ENABLE_ELUNA
+class Eluna;
+#endif /* ENABLE_ELUNA */
 class Object;
 class ObjectGuid;
 class WorldPacket;
@@ -124,6 +127,9 @@ enum eConfigUInt32Values
     CONFIG_UINT32_BIRTHDAY_TIME,
     CONFIG_UINT32_RABBIT_DAY,
     CONFIG_UINT32_MAX_PRIMARY_TRADE_SKILL,
+    CONFIG_UINT32_TRADE_SKILL_GMIGNORE_MAX_PRIMARY_COUNT,
+    CONFIG_UINT32_TRADE_SKILL_GMIGNORE_LEVEL,
+    CONFIG_UINT32_TRADE_SKILL_GMIGNORE_SKILL,
     CONFIG_UINT32_MIN_PETITION_SIGNS,
     CONFIG_UINT32_GM_LOGIN_STATE,
     CONFIG_UINT32_GM_VISIBLE_STATE,
@@ -388,7 +394,6 @@ enum eConfigBoolValues
     CONFIG_BOOL_VMAP_INDOOR_CHECK,
     CONFIG_BOOL_PET_UNSUMMON_AT_MOUNT,
     CONFIG_BOOL_MMAP_ENABLED,
-    CONFIG_BOOL_ELUNA_ENABLED,
     CONFIG_BOOL_PLAYER_COMMANDS,
     CONFIG_BOOL_ENABLE_QUEST_TRACKER,
     
@@ -403,6 +408,10 @@ enum eConfigBoolValues
     // Warden
     CONFIG_BOOL_WARDEN_WIN_ENABLED,
     CONFIG_BOOL_WARDEN_OSX_ENABLED,
+
+    // Recommended Or New Flag
+    CONFIG_BOOL_REALM_RECOMMENDED_OR_NEW_ENABLED,
+    CONFIG_BOOL_REALM_RECOMMENDED_OR_NEW,
     CONFIG_BOOL_VALUE_COUNT
 };
 
@@ -667,6 +676,11 @@ class World
         * Access: public
         **/
         void InvalidatePlayerDataToAllClient(ObjectGuid guid);
+
+#ifdef ENABLE_ELUNA
+        Eluna* GetEluna() const { return eluna; }
+        Eluna* eluna;
+#endif /* ENABLE_ELUNA */
 
     protected:
         void _UpdateGameTime();

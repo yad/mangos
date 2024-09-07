@@ -86,8 +86,10 @@ if(SCRIPT_LIB_ELUNA)
     file(GLOB SRC_GRP_ELUNA
         ${CMAKE_SOURCE_DIR}/src/modules/Eluna/*.cpp
         ${CMAKE_SOURCE_DIR}/src/modules/Eluna/*.h
-        ${CMAKE_SOURCE_DIR}/src/modules/Eluna/Mangos/*.cpp
-        ${CMAKE_SOURCE_DIR}/src/modules/Eluna/Mangos/*.h
+        ${CMAKE_SOURCE_DIR}/src/modules/Eluna/hooks/*.cpp
+        ${CMAKE_SOURCE_DIR}/src/modules/Eluna/hooks/*.h
+        ${CMAKE_SOURCE_DIR}/src/modules/Eluna/methods/Mangos/*.cpp
+        ${CMAKE_SOURCE_DIR}/src/modules/Eluna/methods/Mangos/*.h
     )
     source_group("Eluna" FILES ${SRC_GRP_ELUNA})
 endif()
@@ -236,10 +238,6 @@ add_library(game STATIC
     ${SRC_GRP_WORLD_HANDLERS}
     $<$<BOOL:${SCRIPT_LIB_ELUNA}>:${SRC_GRP_ELUNA}>
     $<$<BOOL:${PLAYERBOTS}>:${SRC_GRP_BOTS}>
-    $<$<BOOL:${PCH}>:
-        pchdef.h
-        pchdef.cpp
-    >
 )
 
 target_include_directories(game
@@ -262,8 +260,9 @@ target_include_directories(game
         WorldHandlers
         $<$<BOOL:${SCRIPT_LIB_ELUNA}>:
             ${CMAKE_SOURCE_DIR}/src/modules/Eluna
-            ${CMAKE_SOURCE_DIR}/src/modules/Eluna/Mangos
-            >
+            ${CMAKE_SOURCE_DIR}/src/modules/Eluna/hooks
+            ${CMAKE_SOURCE_DIR}/src/modules/Eluna/methods/Mangos
+        >
         $<$<BOOL:${PLAYERBOTS}>:
             ${CMAKE_SOURCE_DIR}/src/modules/Bots
             ${CMAKE_SOURCE_DIR}/src/modules/Bots/playerbot
@@ -276,7 +275,7 @@ target_compile_definitions(game
         $<$<BOOL:${SOAP}>:ENABLE_SOAP>
         $<$<BOOL:${SCRIPT_LIB_SD3}>:ENABLE_SD3>
         $<$<BOOL:${PLAYERBOTS}>:ENABLE_PLAYERBOTS>
-        $<$<BOOL:${SCRIPT_LIB_ELUNA}>:ENABLE_ELUNA>
+        $<$<BOOL:${SCRIPT_LIB_ELUNA}>:ENABLE_ELUNA ELUNA_EXPANSION=2 ELUNA_MANGOS>
 )
 
 target_link_libraries(game
@@ -291,7 +290,7 @@ target_link_libraries(game
 
 # Generate precompiled header
 if(PCH)
-    ADD_CXX_PCH(game ${CMAKE_CURRENT_SOURCE_DIR}/pchdef.h ${CMAKE_CURRENT_SOURCE_DIR}/pchdef.cpp)
+    add_cxx_pch(game pchdef.h pchdef.cpp)
 endif()
 
 install(

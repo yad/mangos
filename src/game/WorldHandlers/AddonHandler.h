@@ -22,33 +22,21 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#ifndef MANGOS_H_BATTLEGROUNDRL
-#define MANGOS_H_BATTLEGROUNDRL
+#ifndef MANGOS_H_ADDONHANDLER
+#define MANGOS_H_ADDONHANDLER
 
-class BattleGround;
+#include "Common.h"
+#include "Policies/Singleton.h"
+#include "WorldPacket.h"
 
-class BattleGroundRLScore : public BattleGroundScore
+class AddonHandler
 {
     public:
-        BattleGroundRLScore() {};
-        virtual ~BattleGroundRLScore() {};
-        // TODO fix me
+        /* Construction */
+        AddonHandler();
+        ~AddonHandler();
+        // built addon packet
+        bool BuildAddonPacket(WorldPacket* Source, WorldPacket* Target);
 };
-
-class BattleGroundRL : public BattleGround
-{
-        friend class BattleGroundMgr;
-
-    public:
-        BattleGroundRL();
-
-        /* inherited from BattlegroundClass */
-        void AddPlayer(Player* plr) override;
-        void FillInitialWorldStates(WorldPacket& d, uint32& count) override;
-        void StartingEventOpenDoors() override;
-
-        void RemovePlayer(Player* plr, ObjectGuid guid) override;
-        void HandleKillPlayer(Player* player, Player* killer) override;
-        bool HandlePlayerUnderMap(Player* plr) override;
-};
+#define sAddOnHandler MaNGOS::Singleton<AddonHandler>::Instance()
 #endif

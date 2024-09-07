@@ -97,6 +97,8 @@
 #include <queue>
 #include <sstream>
 #include <algorithm>
+#include <thread>
+#include <atomic>
 
 #include "Utilities/Errors.h"
 #include "LockedQueue/LockedQueue.h"
@@ -172,8 +174,6 @@ typedef off_t ACE_OFF_T;
 
 #define SI64FMTD ACE_INT64_FORMAT_SPECIFIER
 #define SI64LIT(N) ACE_INT64_LITERAL(N)
-
-#define SIZEFMTD ACE_SIZE_T_FORMAT_SPECIFIER
 
 /**
  * @brief

@@ -2530,7 +2530,7 @@ class Player : public Unit
 
         Camera& GetCamera() { return m_camera; }
 
-        virtual void SetPhaseMask(uint32 newPhaseMask, bool update) override;// overwrite Unit::SetPhaseMask
+        void SetPhaseMask(uint32 newPhaseMask, bool update) override;// overwrite Unit::SetPhaseMask
 
         uint8 m_forced_speed_changes[MAX_MOVE_TYPE];
 

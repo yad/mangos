@@ -44,12 +44,18 @@
 #include "ScriptMgr.h"
 #include "CreatureLinkingMgr.h"
 #include "DynamicTree.h"
+#ifdef ENABLE_ELUNA
+#include "LuaValue.h"
+#endif /* ENABLE_ELUNA */
 
 #include <bitset>
 #include <list>
 
 struct CreatureInfo;
 class Creature;
+#ifdef ENABLE_ELUNA
+class Eluna;
+#endif /* ENABLE_ELUNA */
 class Unit;
 class WorldPacket;
 class InstanceData;
@@ -212,7 +218,7 @@ class Map : public GridRefManager<NGridType>
         bool IsBattleArena() const { return i_mapEntry && i_mapEntry->IsBattleArena(); }
         bool IsBattleGroundOrArena() const { return i_mapEntry && i_mapEntry->IsBattleGroundOrArena(); }
 
-        // can't be NULL for loaded map
+        // can't be nullptr for loaded map
         MapPersistentState* GetPersistentState() const { return m_persistentState; }
 
         void AddObjectToRemoveList(WorldObject* obj);
@@ -321,6 +327,12 @@ class Map : public GridRefManager<NGridType>
         bool GetRandomPointInTheAir(uint32 phaseMask, float& x, float& y, float& z, float radius);
         bool GetRandomPointUnderWater(uint32 phaseMask, float& x, float& y, float& z, float radius, GridMapLiquidData& liquid_status);
 
+#ifdef ENABLE_ELUNA
+        Eluna* GetEluna() const;
+
+        LuaVal lua_data = LuaVal({});
+#endif /* ENABLE_ELUNA */
+
     private:
         void LoadMapAndVMap(int gx, int gy);
 
@@ -417,6 +429,10 @@ class Map : public GridRefManager<NGridType>
 
         // WeatherSystem
         WeatherSystem* m_weatherSystem;
+
+#ifdef ENABLE_ELUNA
+        Eluna* eluna;
+#endif /* ENABLE_ELUNA */
 };
 
 class WorldMap : public Map
@@ -452,7 +468,7 @@ class DungeonMap : public Map
         // can't be nullptr for loaded map
         DungeonPersistentState* GetPersistanceState() const;
 
-        virtual void InitVisibilityDistance() override;
+        void InitVisibilityDistance() override;
     private:
         bool m_resetAfterUnload;
         bool m_unloadWhenEmpty;
@@ -473,7 +489,7 @@ class BattleGroundMap : public Map
         void SetUnload();
         void UnloadAll(bool pForce) override;
 
-        virtual void InitVisibilityDistance() override;
+        void InitVisibilityDistance() override;
         BattleGround* GetBG() { return m_bg; }
         void SetBG(BattleGround* bg) { m_bg = bg; }
 
